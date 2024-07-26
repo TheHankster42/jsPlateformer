@@ -1,5 +1,5 @@
 class Player extends Sprite{
-    constructor({ position }, collisionBlocks, imageSrc) {
+    constructor({ position, collisionBlocks, imageSrc }) {
         super({
             imageSrc
         })

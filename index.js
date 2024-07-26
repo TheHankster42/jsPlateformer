@@ -58,7 +58,7 @@ const player = new Player({
         y: 100 /4 ,
     },
     collisionBlocks: collisionBlocks,
-    imageSrc: './img/background.png'
+    imageSrc: './img/warrior/Idle.png'
 })
 
 const keys = {

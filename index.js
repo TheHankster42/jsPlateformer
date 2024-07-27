@@ -43,22 +43,66 @@ platformCollisions2D.forEach((row, y) => {
                     x: x * tileSize,
                     y: y * tileSize,
                 },
+                height: 4
             }))
         }
     })
 })
 
 const gravity = 0.25
-const speed = 3
-const speedReduction = 1.5
+const speed = 2
 
 const player = new Player({
     position: {
-        x: 500 /4,
-        y: 100 /4 ,
+        x: 150,
+        y: 320,
     },
     collisionBlocks: collisionBlocks,
-    imageSrc: './img/warrior/Idle.png'
+    platformCollisionBlocks: platformCollisionBlocks,
+    imageSrc: './img/warrior/Idle.png',
+    frameRate: 8,
+    animations: {
+        Idle: {
+            imageSrc: './img/warrior/Idle.png',
+            frameRate: 8,
+            frameBuffer: 3,
+          },
+          Run: {
+            imageSrc: './img/warrior/Run.png',
+            frameRate: 8,
+            frameBuffer: 5,
+          },
+          Jump: {
+            imageSrc: './img/warrior/Jump.png',
+            frameRate: 2,
+            frameBuffer: 3,
+          },
+          Fall: {
+            imageSrc: './img/warrior/Fall.png',
+            frameRate: 2,
+            frameBuffer: 3,
+          },
+          FallLeft: {
+            imageSrc: './img/warrior/FallLeft.png',
+            frameRate: 2,
+            frameBuffer: 3,
+          },
+          RunLeft: {
+            imageSrc: './img/warrior/RunLeft.png',
+            frameRate: 8,
+            frameBuffer: 5,
+          },
+          IdleLeft: {
+            imageSrc: './img/warrior/IdleLeft.png',
+            frameRate: 8,
+            frameBuffer: 3,
+          },
+          JumpLeft: {
+            imageSrc: './img/warrior/JumpLeft.png',
+            frameRate: 2,
+            frameBuffer: 3,
+          },
+    }
 })
 
 const keys = {
@@ -72,7 +116,7 @@ const keys = {
         pressed: false
     }
 }
-
+const backgroundImageHeight = 432
 const background = new Sprite({
     position: {
         x: 0,
@@ -80,6 +124,13 @@ const background = new Sprite({
     },
     imageSrc: './img/background.png'
 })
+
+const camera = {
+    position: {
+        x: 0,
+        y: -backgroundImageHeight + scaledCanvas.height,
+    },
+}
 
 function animate() {
     window.requestAnimationFrame(animate)
@@ -89,24 +140,56 @@ function animate() {
 
     c.save()
     c.scale(4, 4)
-    c.translate(0, -background.image.height + scaledCanvas.height)
+    c.translate(camera.position.x, camera.position.y)
     background.update()
 
-    collisionBlocks.forEach(collisionBlock => {
-        collisionBlock.update()
-    })
-    platformCollisionBlocks.forEach(platformCollisionBlocks => {
-        platformCollisionBlocks.update()
-    })
-
+    // collisionBlocks.forEach(collisionBlock => {
+    //     collisionBlock.update()
+    // })
+    // platformCollisionBlocks.forEach(platformCollisionBlocks => {
+    //     platformCollisionBlocks.update()
+    // })
+    
+    player.checkForHorizontalCanvasCollision()
     player.update()
 
     player.velocity.x = 0
-    if (keys.d.pressed && keys.a.pressed) player.velocity.x = 0
-    else if (keys.a.pressed && !keys.s.pressed) player.velocity.x = -speed
-    else if (keys.d.pressed && !keys.s.pressed) player.velocity.x = speed
-    else if (keys.a.pressed && keys.s.pressed) player.velocity.x = -speedReduction
-    else if (keys.d.pressed && keys.s.pressed) player.velocity.x = speedReduction
+    if (keys.a.pressed) {
+        player.switchSprite('RunLeft')
+        player.velocity.x = -speed
+        player.direction = 'left'
+        player.shouldPanRight() 
+    }
+    else if (keys.d.pressed) {
+        player.switchSprite('Run')
+        player.velocity.x = speed
+        player.direction = 'right'
+        player.shouldPanLeft() 
+    }
+    else if (player.velocity.y == 0){
+        if(player.direction == 'right'){
+            player.switchSprite('Idle')
+        } else{
+            player.switchSprite('IdleLeft')           
+        }
+    }
+
+    if(player.velocity.y < 0) {
+        player.shouldPanDown()
+        if(player.direction == 'right'){
+            player.switchSprite('Jump')
+        } else{
+            player.switchSprite('JumpLeft')            
+        }
+    }
+    else if (player.velocity.y > 0) {
+        player.shouldPanUp()
+        if(player.direction == 'right'){
+            player.switchSprite('Fall')
+        } else{
+            player.switchSprite('FallLeft')            
+        }
+    }
 
     c.restore()    
 }
@@ -129,7 +212,7 @@ window.addEventListener('keydown', (event) => {
 
         case 'w':
         case ' ':
-            player.velocity.y = -7
+            player.velocity.y = -6
             break
     }
 })

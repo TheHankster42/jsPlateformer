@@ -51,6 +51,13 @@ platformCollisions2D.forEach((row, y) => {
 
 const gravity = 0.25
 const speed = 2
+const status = {
+    colliding: false,
+    activeDoubleJump: true,
+    touchingWall: false,
+    onPlatform: false,
+    dropDown: false,
+}
 
 const player = new Player({
     position: {
@@ -102,7 +109,8 @@ const player = new Player({
             frameRate: 2,
             frameBuffer: 3,
           },
-    }
+    },
+    status: status,
 })
 
 const keys = {
@@ -152,6 +160,7 @@ function animate() {
     
     player.checkForHorizontalCanvasCollision()
     player.update()
+    // console.log(player.status)
 
     player.velocity.x = 0
     if (keys.a.pressed) {
@@ -207,12 +216,21 @@ window.addEventListener('keydown', (event) => {
             break
 
         case 's':
-            keys.s.pressed = true
+            if(player.status.onPlatform == true){
+                player.status.dropDown = true
+            }            
             break
 
         case 'w':
         case ' ':
-            player.velocity.y = -6
+            if (player.status.colliding == true) {
+                player.velocity.y = -6
+                colliding = false
+            }
+            if (player.status.colliding == false && player.status.activeDoubleJump){
+                player.velocity.y = -6
+                player.status.activeDoubleJump = false
+            }
             break
     }
 })
@@ -229,6 +247,7 @@ window.addEventListener('keyup', (event) => {
 
         case 's':
             keys.s.pressed = false
+            player.status.dropDown = false
             break
 
 

@@ -12,7 +12,9 @@ function collision({
 function platformCollision({
     object1,
     object2,
+    dropDown,
 }) {
+    if (dropDown == true) return false
     return (
         object1.position.y + object1.height >= object2.position.y &&
         object1.position.y + object1.height-2 <= object2.position.y + object2.height &&

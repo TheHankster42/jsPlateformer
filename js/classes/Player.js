@@ -1,5 +1,5 @@
 class Player extends Sprite {
-    constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations }) {
+    constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations, status}) {
         super({
             imageSrc,
             frameRate,
@@ -38,6 +38,7 @@ class Player extends Sprite {
             width: 200,
             height: 80,
         }
+        this.status = status
     }
 
     switchSprite(key) {
@@ -129,6 +130,10 @@ class Player extends Sprite {
 
         this.checkForVerticalCollisions()
     }
+    activeJump() {
+        this.status.colliding = true
+        this.status.activeDoubleJump = true
+    }
 
     updateHitbox() {
         this.hitbox = {
@@ -177,6 +182,8 @@ class Player extends Sprite {
     }
 
     checkForVerticalCollisions() {
+        this.status.colliding = false
+        this.status.onPlatform = false
         for (let i = 0; i < this.collisionBlocks.length; i++) {
             const collisionBlock = this.collisionBlocks[i]
 
@@ -187,6 +194,7 @@ class Player extends Sprite {
                 })
             ) {
                 if (this.velocity.y > 0) {
+                    this.activeJump()
                     this.velocity.y = 0
 
                     const offset =
@@ -216,9 +224,12 @@ class Player extends Sprite {
                 platformCollision({
                     object1: this.hitbox,
                     object2: platformCollisionBlock,
+                    dropDown: this.status.dropDown
                 })
             ) {
                 if (this.velocity.y > 0) {
+                    this.activeJump()
+                    this.status.onPlatform = true
                     this.velocity.y = 0
 
                     const offset =

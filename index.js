@@ -2,6 +2,7 @@ const canvas = document.querySelector('canvas')
 const c = canvas.getContext(['2d'])
 const tileSize = 16
 document.body.style.overflow = 'hidden';
+document.querySelector('canvas').style.cursor = 'none';
 
 
 // canvas.width = 1024

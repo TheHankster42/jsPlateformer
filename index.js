@@ -1,53 +1,28 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext(['2d'])
 const tileSize = 16
+document.body.style.overflow = 'hidden';
 
-canvas.width = 1024
-canvas.height = 576
+
+// canvas.width = 1024
+// canvas.height = 
+
+canvas.width = 1920
+canvas.height = 1080    
 
 const scaledCanvas = {
     width: canvas.width / 4,
     height: canvas.height / 4,
 }
 
-const floorCollisions2D = []
-for (let i = 0; i < floorCollisions.length; i += 36) {
-    floorCollisions2D.push(floorCollisions.slice(i, i + 36))
-}
-const collisionBlocks = []
-
-floorCollisions2D.forEach((row, y) => {
-    row.forEach((symbol, x) => {
-        if (symbol == 202) {
-            collisionBlocks.push(new CollisionBlock({
-                position: {
-                    x: x * tileSize,
-                    y: y * tileSize,
-                },
-            }))
-        }
-    })
+const room1 = new Room({
+    imageSrc: './img/background.png',
+    floorCollisions: floorCollisions1,
+    platformCollisions: platformCollisions1,
+    imageHeight : 432,
 })
 
-const platformCollisions2D = []
-for (let i = 0; i < platformCollisions.length; i += 36) {
-    platformCollisions2D.push(platformCollisions.slice(i, i + 36))
-}
-const platformCollisionBlocks = []
-
-platformCollisions2D.forEach((row, y) => {
-    row.forEach((symbol, x) => {
-        if (symbol == 202) {
-            platformCollisionBlocks.push(new CollisionBlock({
-                position: {
-                    x: x * tileSize,
-                    y: y * tileSize,
-                },
-                height: 4
-            }))
-        }
-    })
-})
+var currentRoom = room1
 
 const gravity = 0.25
 const speed = 2
@@ -64,8 +39,8 @@ const player = new Player({
         x: 150,
         y: 320,
     },
-    collisionBlocks: collisionBlocks,
-    platformCollisionBlocks: platformCollisionBlocks,
+    collisionBlocks: currentRoom.collisionBlocks,
+    platformCollisionBlocks: currentRoom.platformCollisionBlocks,
     imageSrc: './img/warrior/Idle.png',
     frameRate: 8,
     animations: {
@@ -109,6 +84,12 @@ const player = new Player({
             frameRate: 2,
             frameBuffer: 3,
           },
+          Slide: {
+
+          },
+          SlideLeft: {
+
+          },
     },
     status: status,
 })
@@ -124,32 +105,24 @@ const keys = {
         pressed: false
     }
 }
-const backgroundImageHeight = 432
-const background = new Sprite({
-    position: {
-        x: 0,
-        y: 0,
-    },
-    imageSrc: './img/background.png'
-})
 
-const camera = {
+var camera = {
     position: {
         x: 0,
-        y: -backgroundImageHeight + scaledCanvas.height,
+        y: -currentRoom.imageHeight + scaledCanvas.height,
     },
 }
 
 function animate() {
     window.requestAnimationFrame(animate)
 
-    c.fillStyle = 'purple'
+    c.fillStyle = 'black'
     c.fillRect(0, 0, canvas.width, canvas.height)
 
     c.save()
     c.scale(4, 4)
     c.translate(camera.position.x, camera.position.y)
-    background.update()
+    currentRoom.background.update()
 
     // collisionBlocks.forEach(collisionBlock => {
     //     collisionBlock.update()

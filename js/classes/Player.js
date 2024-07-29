@@ -1,5 +1,5 @@
 class Player extends Sprite {
-    constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations, status}) {
+    constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations, status }) {
         super({
             imageSrc,
             frameRate,
@@ -32,11 +32,11 @@ class Player extends Sprite {
         }
         this.camerabox = {
             position: {
-                x: this.position.x,
-                y: this.position.y,
+                x: this.position.x - 110,
+                y: this.position.y - 50,
             },
-            width: 200,
-            height: 80,
+            width: 300,
+            height: 140,
         }
         this.status = status
     }
@@ -51,56 +51,58 @@ class Player extends Sprite {
 
     }
 
-    shouldPanLeft(){
+    shouldPanLeft() {
         const cameraboxRightSide = this.camerabox.position.x + this.camerabox.width
-        const scaledDownCanvasWidth = canvas.width/4
+        const scaledDownCanvasWidth = canvas.width / 4
 
-        if(cameraboxRightSide >= 576) return
+        if (cameraboxRightSide >= 576) return
 
-        if(cameraboxRightSide >= scaledDownCanvasWidth + Math.abs   (camera.position.x)){
+        if (cameraboxRightSide >= scaledDownCanvasWidth + Math.abs(camera.position.x)) {
             camera.position.x -= this.velocity.x
         }
     }
 
-    shouldPanRight(){
-        if(this.camerabox.position.x <= 0) return
+    shouldPanRight() {
+        if (this.camerabox.position.x <= 0) return
 
-        if( this.camerabox.position.x <= Math.abs(camera.position.x)){
+        if (this.camerabox.position.x <= Math.abs(camera.position.x)) {
             camera.position.x -= this.velocity.x
         }
     }
 
-    shouldPanDown(){
-        if(this.camerabox.position.y + this.velocity.y <= 0) return
+    shouldPanDown() {
+        if (this.camerabox.position.y + this.velocity.y <= 0) return
 
-        if( this.camerabox.position.y <= Math.abs(camera.position.y)){
+        if (this.camerabox.position.y <= Math.abs(camera.position.y)) {
             camera.position.y -= this.velocity.y
         }
     }
 
-    shouldPanUp(){
-        const scaledDownCanvasHeight = canvas.height/4
+    shouldPanUp() {
+        const scaledDownCanvasHeight = canvas.height / 4
 
-        if(this.camerabox.position.y + this.camerabox.height +this.velocity.y <= scaledDownCanvasHeight) return
+        if (this.camerabox.position.y + this.camerabox.height + this.velocity.y <= scaledDownCanvasHeight) return
 
-        if( this.camerabox.position.y + this.camerabox.height >= Math.abs(camera.position.y) + scaledDownCanvasHeight){
+        if (this.camerabox.position.y + this.camerabox.height >= Math.abs(camera.position.y) + scaledDownCanvasHeight) {
             camera.position.y -= this.velocity.y
         }
     }
 
-    updateCameraBox(){
+    updateCameraBox() {
         this.camerabox = {
             position: {
-                x: this.position.x - 55,
-                y: this.position.y,
+                x: this.position.x - 110,
+                y: this.position.y - 54,
             },
-            width: 200,
-            height: 80,
+            width: 300,
+            height: 140,
+
+
         }
     }
 
-    checkForHorizontalCanvasCollision(){
-        if(this.hitbox.position.x + this.hitbox.width + this.velocity.x >= 576 || this.hitbox.position.x + this.velocity.x <= 0){
+    checkForHorizontalCanvasCollision() {
+        if (this.hitbox.position.x + this.hitbox.width + this.velocity.x >= 576 || this.hitbox.position.x + this.velocity.x <= 0) {
             this.velocity.x = 0
         }
     }
@@ -108,16 +110,16 @@ class Player extends Sprite {
     update() {
         this.updateFrames()
         this.updateHitbox()
-        this.updateCameraBox()  
+        this.updateCameraBox()
 
         // c.fillStyle = 'rgba(0,255,0,0.3)'
         // c.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height)
 
         // c.fillStyle = 'rgba(0,0,255,0.3)'
-        // c.fillRect(this.position.x,this.position.y,this.width,this.height)
+        // c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
         // c.fillStyle = 'rgba(255,0,0,0.3)'
-        // c.fillRect(this.hitbox.position.x,this.hitbox.position.y,this.hitbox.width,this.hitbox.height)
+        // c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height)
 
         this.draw()
 
@@ -178,6 +180,9 @@ class Player extends Sprite {
 
     applyGravity() {
         this.velocity.y += gravity
+        if (this.velocity.y > 5) {
+            this.velocity.y = 5
+        }
         this.position.y += this.velocity.y
     }
 

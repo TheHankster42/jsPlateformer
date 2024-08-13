@@ -1,3 +1,4 @@
+
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext(['2d'])
 const tileSize = 16
@@ -9,7 +10,7 @@ document.querySelector('canvas').style.cursor = 'none';
 // canvas.height = 
 
 canvas.width = 1920
-canvas.height = 1080    
+canvas.height = 1080
 
 const scaledCanvas = {
     width: canvas.width / 4,
@@ -20,7 +21,7 @@ const room1 = new Room({
     imageSrc: './img/background.png',
     floorCollisions: floorCollisions1,
     platformCollisions: platformCollisions1,
-    imageHeight : 432,
+    imageHeight: 432,
 })
 
 var currentRoom = room1
@@ -35,7 +36,11 @@ const status = {
     dropDown: false,
 }
 
-const player = new Player({
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+const warrior = new Player({
     position: {
         x: 150,
         y: 320,
@@ -49,51 +54,53 @@ const player = new Player({
             imageSrc: './img/warrior/Idle.png',
             frameRate: 8,
             frameBuffer: 3,
-          },
-          Run: {
+        },
+        Run: {
             imageSrc: './img/warrior/Run.png',
             frameRate: 8,
             frameBuffer: 5,
-          },
-          Jump: {
+        },
+        Jump: {
             imageSrc: './img/warrior/Jump.png',
             frameRate: 2,
             frameBuffer: 3,
-          },
-          Fall: {
+        },
+        Fall: {
             imageSrc: './img/warrior/Fall.png',
             frameRate: 2,
             frameBuffer: 3,
-          },
-          FallLeft: {
+        },
+        FallLeft: {
             imageSrc: './img/warrior/FallLeft.png',
             frameRate: 2,
             frameBuffer: 3,
-          },
-          RunLeft: {
+        },
+        RunLeft: {
             imageSrc: './img/warrior/RunLeft.png',
             frameRate: 8,
             frameBuffer: 5,
-          },
-          IdleLeft: {
+        },
+        IdleLeft: {
             imageSrc: './img/warrior/IdleLeft.png',
             frameRate: 8,
             frameBuffer: 3,
-          },
-          JumpLeft: {
+        },
+        JumpLeft: {
             imageSrc: './img/warrior/JumpLeft.png',
             frameRate: 2,
             frameBuffer: 3,
-          },
-          Slide: {
+        },
+        Slide: {
 
-          },
-          SlideLeft: {
+        },
+        SlideLeft: {
 
-          },
+        },
     },
     status: status,
 })
+
+var player = warrior
 
 const keys = {
     d: {
@@ -114,6 +121,23 @@ var camera = {
     },
 }
 
+brick = new Brick({
+    position: {
+        x: 0,
+        y: 0,
+    },
+    imageSrc: './img/brick/bricksheet.png',
+    frameRate: 2,
+    scale: 1,
+    animations: {
+        Stationary: {
+            imageSrc: './img/brick/bricksheet.png',
+            frameRate: 2,
+            frameBuffer: 4,
+        },
+    },
+})
+
 function animate() {
     window.requestAnimationFrame(animate)
 
@@ -131,50 +155,51 @@ function animate() {
     // platformCollisionBlocks.forEach(platformCollisionBlocks => {
     //     platformCollisionBlocks.update()
     // })
-    
+
     player.checkForHorizontalCanvasCollision()
     player.update()
     // console.log(player.status)
+    brick.update()
 
     player.velocity.x = 0
     if (keys.a.pressed) {
         player.switchSprite('RunLeft')
         player.velocity.x = -speed
         player.direction = 'left'
-        player.shouldPanRight() 
+        player.shouldPanRight()
     }
     else if (keys.d.pressed) {
         player.switchSprite('Run')
         player.velocity.x = speed
         player.direction = 'right'
-        player.shouldPanLeft() 
+        player.shouldPanLeft()
     }
-    else if (player.velocity.y == 0){
-        if(player.direction == 'right'){
+    else if (player.velocity.y == 0) {
+        if (player.direction == 'right') {
             player.switchSprite('Idle')
-        } else{
-            player.switchSprite('IdleLeft')           
+        } else {
+            player.switchSprite('IdleLeft')
         }
     }
 
-    if(player.velocity.y < 0) {
+    if (player.velocity.y < 0) {
         player.shouldPanDown()
-        if(player.direction == 'right'){
+        if (player.direction == 'right') {
             player.switchSprite('Jump')
-        } else{
-            player.switchSprite('JumpLeft')            
+        } else {
+            player.switchSprite('JumpLeft')
         }
     }
     else if (player.velocity.y > 0) {
         player.shouldPanUp()
-        if(player.direction == 'right'){
+        if (player.direction == 'right') {
             player.switchSprite('Fall')
-        } else{
-            player.switchSprite('FallLeft')            
+        } else {
+            player.switchSprite('FallLeft')
         }
     }
 
-    c.restore()    
+    c.restore()
 }
 
 animate()
@@ -190,9 +215,9 @@ window.addEventListener('keydown', (event) => {
             break
 
         case 's':
-            if(player.status.onPlatform == true){
+            if (player.status.onPlatform == true) {
                 player.status.dropDown = true
-            }            
+            }
             break
 
         case 'w':
@@ -201,7 +226,7 @@ window.addEventListener('keydown', (event) => {
                 player.velocity.y = -6
                 colliding = false
             }
-            if (player.status.colliding == false && player.status.activeDoubleJump){
+            if (player.status.colliding == false && player.status.activeDoubleJump) {
                 player.velocity.y = -6
                 player.status.activeDoubleJump = false
             }

@@ -28,13 +28,7 @@ var currentRoom = room1
 
 const gravity = 0.25
 const speed = 2
-const status = {
-    colliding: false,
-    activeDoubleJump: true,
-    touchingWall: false,
-    onPlatform: false,
-    dropDown: false,
-}
+
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -45,8 +39,6 @@ const warrior = new Player({
         x: 150,
         y: 320,
     },
-    collisionBlocks: currentRoom.collisionBlocks,
-    platformCollisionBlocks: currentRoom.platformCollisionBlocks,
     imageSrc: './img/warrior/Idle.png',
     frameRate: 8,
     animations: {
@@ -97,7 +89,6 @@ const warrior = new Player({
 
         },
     },
-    status: status,
 })
 
 var player = warrior
@@ -157,7 +148,7 @@ function animate() {
     // })
 
     player.checkForHorizontalCanvasCollision()
-    player.update()
+    player.update(currentRoom)
     // console.log(player.status)
     brick.update()
 

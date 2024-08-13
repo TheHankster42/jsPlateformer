@@ -1,5 +1,5 @@
 class Player extends Sprite {
-    constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations, status }) {
+    constructor({ position, imageSrc, frameRate, scale = 0.5, animations}) {
         super({
             imageSrc,
             frameRate,
@@ -10,9 +10,6 @@ class Player extends Sprite {
             x: 0,
             y: 1,
         }
-        this.collisionBlocks = collisionBlocks
-        this.platformCollisionBlocks = platformCollisionBlocks
-
         this.hitbox = {
             position: {
                 x: this.position.x,
@@ -38,7 +35,13 @@ class Player extends Sprite {
             width: 300,
             height: 140,
         }
-        this.status = status
+        this.status = {
+            colliding: false,
+            activeDoubleJump: true,
+            touchingWall: false,
+            onPlatform: false,
+            dropDown: false,
+        }
     }
 
     switchSprite(key) {
@@ -107,7 +110,7 @@ class Player extends Sprite {
         }
     }
 
-    update() {
+    update(currentRoom) {
         this.updateFrames()
         this.updateHitbox()
         this.updateCameraBox()
@@ -126,11 +129,11 @@ class Player extends Sprite {
         this.position.x += this.velocity.x
         this.updateHitbox()
 
-        this.checkForHorizontalCollisions()
+        this.checkForHorizontalCollisions(currentRoom)
         this.applyGravity()
         this.updateHitbox()
 
-        this.checkForVerticalCollisions()
+        this.checkForVerticalCollisions(currentRoom)
     }
     activeJump() {
         this.status.colliding = true
@@ -148,9 +151,9 @@ class Player extends Sprite {
         }
     }
 
-    checkForHorizontalCollisions() {
-        for (let i = 0; i < this.collisionBlocks.length; i++) {
-            const collisionBlock = this.collisionBlocks[i]
+    checkForHorizontalCollisions(currentRoom) {
+        for (let i = 0; i < currentRoom.collisionBlocks.length; i++) {
+            const collisionBlock = currentRoom.collisionBlocks[i]
 
             if (
                 collision({
@@ -186,11 +189,11 @@ class Player extends Sprite {
         this.position.y += this.velocity.y
     }
 
-    checkForVerticalCollisions() {
+    checkForVerticalCollisions(currentRoom) {
         this.status.colliding = false
         this.status.onPlatform = false
-        for (let i = 0; i < this.collisionBlocks.length; i++) {
-            const collisionBlock = this.collisionBlocks[i]
+        for (let i = 0; i < currentRoom.collisionBlocks.length; i++) {
+            const collisionBlock = currentRoom.collisionBlocks[i]
 
             if (
                 collision({
@@ -222,8 +225,8 @@ class Player extends Sprite {
         }
 
         // platform collision blocks from bottom
-        for (let i = 0; i < this.platformCollisionBlocks.length; i++) {
-            const platformCollisionBlock = this.platformCollisionBlocks[i]
+        for (let i = 0; i < currentRoom.platformCollisionBlocks.length; i++) {
+            const platformCollisionBlock = currentRoom.platformCollisionBlocks[i]
 
             if (
                 platformCollision({

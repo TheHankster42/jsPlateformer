@@ -24,7 +24,7 @@ const room1 = new Room({
     imageHeight: 432,
 })
 
-roomlist = {room1}
+roomlist = [room1]
 
 var currentRoom = roomlist[0]
 
@@ -55,7 +55,7 @@ const keys = {
 var camera = {
     position: {
         x: 0,
-        y: -currentRoom.imageHeight + scaledCanvas.height,
+        y: -(currentRoom.imageHeight) + scaledCanvas.height,
     },
 }
 

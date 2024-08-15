@@ -1,11 +1,12 @@
 class Room{
-    constructor({imageSrc, floorCollisions, platformCollisions, imageHeight}){
+    constructor({imageSrc, floorCollisions, platformCollisions, imageHeight, scale = 1}){
         this.background = new Sprite({
             position: {
                 x: 0,
                 y: 0,
             },
-            imageSrc: imageSrc
+            imageSrc: imageSrc,
+            scale
         })
 
         this.floorCollisions = floorCollisions
@@ -23,7 +24,7 @@ class Room{
 
         this.floorCollisions2D.forEach((row, y) => {
             row.forEach((symbol, x) => {
-                if (symbol == 202) {
+                if (symbol == 1) {
                     this.collisionBlocks.push(new CollisionBlock({
                         position: {
                             x: x * tileSize,
@@ -42,7 +43,7 @@ class Room{
 
         this.platformCollisions2D.forEach((row, y) => {
             row.forEach((symbol, x) => {
-                if (symbol == 202) {
+                if (symbol == 1) {
                     this.platformCollisionBlocks.push(new CollisionBlock({
                         position: {
                             x: x * tileSize,

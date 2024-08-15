@@ -5,10 +5,6 @@ const tileSize = 16
 document.body.style.overflow = 'hidden';
 document.querySelector('canvas').style.cursor = 'none';
 
-
-// canvas.width = 1024
-// canvas.height = 
-
 canvas.width = 1920
 canvas.height = 1080
 
@@ -18,23 +14,33 @@ const scaledCanvas = {
 }
 
 const room1 = new Room({
-    imageSrc: './img/background.png',
+    imageSrc: './img/backgrounds/background.png',
     floorCollisions: floorCollisions1,
     platformCollisions: platformCollisions1,
     imageHeight: 432,
 })
 
-roomlist = [room1]
+const room2 = new Room({
+    imageSrc: './img/backgrounds/background_glacial_mountains_lightened.png',
+    floorCollisions: floorCollisionsFlat,
+    platformCollisions: platformCollisionsNull,
+    imageHeight: 216,
+    scale: 2,
+})
+
+const room3 = new Room({
+    imageSrc: './img/backgrounds/background2.png',
+    floorCollisions: floorCollisionsFlat,
+    platformCollisions: platformCollisionsNull,
+    imageHeight: 432,
+})
+
+roomlist = [room1, room2, room3]
 roomlistIndex = 0
 var currentRoom = roomlist[roomlistIndex]
 
 const gravity = 0.25
 const speed = 2
-
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 const warrior = new Player(argsW)
 
@@ -179,11 +185,8 @@ window.addEventListener('keyup', (event) => {
             break
         case 'p':
             if (roomlist.length == roomlistIndex + 1) {
-                console.log("works")
                 roomlistIndex = 0
             } else {
-                console.log("sad")
-
                 roomlistIndex++
             }
             currentRoom = roomlist[roomlistIndex]

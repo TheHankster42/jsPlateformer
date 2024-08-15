@@ -25,8 +25,8 @@ const room1 = new Room({
 })
 
 roomlist = [room1]
-
-var currentRoom = roomlist[0]
+roomlistIndex = 0
+var currentRoom = roomlist[roomlistIndex]
 
 const gravity = 0.25
 const speed = 2
@@ -49,7 +49,7 @@ const keys = {
     },
     s: {
         pressed: false
-    }
+    },
 }
 
 var camera = {
@@ -176,6 +176,17 @@ window.addEventListener('keyup', (event) => {
         case 'w':
         case ' ':
             player.velocity.y = 0
+            break
+        case 'p':
+            if (roomlist.length == roomlistIndex + 1) {
+                console.log("works")
+                roomlistIndex = 0
+            } else {
+                console.log("sad")
+
+                roomlistIndex++
+            }
+            currentRoom = roomlist[roomlistIndex]
             break
     }
 })

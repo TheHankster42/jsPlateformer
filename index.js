@@ -35,7 +35,14 @@ const room3 = new Room({
     imageHeight: 432,
 })
 
-roomlist = [room1, room2, room3]
+const room4 = new Room({
+    imageSrc: './img/backgrounds/background2.png',
+    floorCollisions: floorCollisionsStart,
+    platformCollisions: platformCollisionsNull,
+    imageHeight: 432,
+})
+
+roomlist = [room1, room2, room3, room4]
 roomlistIndex = 0
 var currentRoom = roomlist[roomlistIndex]
 

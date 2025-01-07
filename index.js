@@ -84,7 +84,7 @@ var camera = {
     },
 }
 
-brick = new Brick(argsBrick)
+// brick = new Brick(argsBrick)
 
 function animate() {
     window.requestAnimationFrame(animate)

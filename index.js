@@ -107,7 +107,9 @@ function animate() {
     player.checkForHorizontalCanvasCollision()
     player.update(currentRoom)
     // console.log(player.status)
-    brick.update()
+    if (brick != null){
+        brick.update()
+    }
 
     player.velocity.x = 0
     if (keys.a.pressed) {

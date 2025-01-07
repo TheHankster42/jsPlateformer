@@ -110,6 +110,7 @@ function animate() {
     if (brick != null){
         brick.update()
     }
+    enemy.update()
 
     player.velocity.x = 0
     if (keys.a.pressed) {

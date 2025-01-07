@@ -49,9 +49,21 @@ var currentRoom = roomlist[roomlistIndex]
 const gravity = 0.25
 const speed = 2
 
-const warrior = new Player(argsW)
+var player = new Player(argsW)
 
-var player = warrior
+const enemy = new Enemy({
+    position: {
+        x: 150,
+        y: 320,
+    }, 
+    imageSrc: './img/brick/bricksheet.png',
+    frameRate = 1, 
+    frameBuffer = 7, 
+    scale = 1,  
+    health = 100, 
+    player: player,
+    speed = speed,
+})
 
 const keys = {
     d: {

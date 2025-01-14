@@ -45,6 +45,10 @@ class Player extends Sprite {
         this.maxHealth = 100;
         this.health = this.maxHealth;
         this.gameOver = false;
+
+        this.meleeCooldown = 500;
+        this.lastMeleeTime = 0;
+        this.meleeRange = 50;
     }
 
     switchSprite(key) {
@@ -228,6 +232,31 @@ class Player extends Sprite {
             player.camerabox.position.x + 135,
             player.camerabox.position.y + 70
         );
+    }
+
+    meleeAttack(enemies) {
+        const currentTime = Date.now();
+
+        if (currentTime - this.lastMeleeTime >= this.meleeCooldown) {
+            this.lastMeleeTime = currentTime;
+
+            enemies.forEach(enemy => {
+                const distX = Math.abs(this.position.x - enemy.position.x);
+                const distY = Math.abs(this.position.y - enemy.position.y);
+
+                if (distX < this.meleeRange && distY < this.meleeRange) {
+                    enemy.takeDamage(20);
+                    console.log('Melee attack!');
+                }
+                if (this.direction = "right"){
+                    this.switchSprite("Fall");
+                } else{
+                    this.switchSprite("FallLeft");
+                }
+            });a
+        } else {
+            console.log('Melee attack is on cooldown!');
+        }
     }
 
     checkForVerticalCollisions(currentRoom) {

@@ -12,6 +12,9 @@ class Enemy extends Sprite {
     this.player = player;
     this.moveSpeed = moveSpeed;
     this.detectionRadius = 250;
+    this.maxHealth = health;
+    this.health = health;
+    this.dead = false;
 
     this.hitbox = {
       position: { x: this.position.x + 50, y: this.position.y + 50 },
@@ -39,6 +42,9 @@ class Enemy extends Sprite {
   }
 
   update(player) {
+    if (this.dead){
+      return;
+    }
     this.updateFrames();
     this.updateHitbox();
     this.updateMovement(player);
@@ -47,6 +53,7 @@ class Enemy extends Sprite {
     this.position.y += this.velocity.y;
     this.updateAttackTimer(player)
     this.drawHitbox();
+    this.drawHealthBar();
   }
 
   updateHitbox() {
@@ -120,20 +127,42 @@ class Enemy extends Sprite {
   takeDamage(amount) {
     this.health -= amount;
     if (this.health <= 0) {
-      this.die();
+      this.dead = true;
     }
   }
 
-  die() {
-    console.log("Enemy died!");
+  drawHealthBar() {
+    c.fillStyle = 'black';
+    c.fillRect(
+      this.hitbox.position.x + 0,
+      this.hitbox.position.y - 7,
+      35,
+      5
+    );
+
+    const healthWidth = (this.health / this.maxHealth) * 35;
+    c.fillStyle = 'green';
+    c.fillRect(
+      this.hitbox.position.x + 0,
+      this.hitbox.position.y - 7,
+      healthWidth,
+      5
+    );
+
+    c.fillStyle = 'white';
+    c.font = '5px Arial';
+    c.fillText(
+      `${this.health}/${this.maxHealth}`,
+      this.hitbox.position.x + 0,
+      this.hitbox.position.y - 7
+    );
   }
 
-  // Method to check if the enemy is within the player's hitbox
   updateAttackTimer(player) {
     if (this.playerInsideHitbox(player)) {
-      this.timeInPlayerHitbox += 1000 / 30; // Time increment per frame (approx 60 FPS)
+      this.timeInPlayerHitbox += 1000 / 30;
     } else {
-      this.timeInPlayerHitbox = 0; // Reset time if the player is not in the hitbox
+      this.timeInPlayerHitbox = 0;
     }
   }
 }

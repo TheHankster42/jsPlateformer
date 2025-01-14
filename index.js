@@ -23,12 +23,12 @@ const enemy = new Enemy({
     position: {
         x: 150,
         y: 320,
-    }, 
+    },
     imageSrc: './img/brick/bricksheet.png',
-    frameRate: 2, 
-    frameBuffer: 7, 
-    scale: 1,  
-    health: 100, 
+    frameRate: 2,
+    frameBuffer: 7,
+    scale: 1,
+    health: 100,
     player: player,
     moveSpeed: 1.75,
 })
@@ -37,12 +37,12 @@ const enemy2 = new Enemy({
     position: {
         x: 300,
         y: 320,
-    }, 
+    },
     imageSrc: './img/brick/bricksheet.png',
-    frameRate: 2, 
-    frameBuffer: 7, 
-    scale: 1,  
-    health: 100, 
+    frameRate: 2,
+    frameBuffer: 7,
+    scale: 1,
+    health: 100,
     player: player,
     moveSpeed: 1.75,
 })
@@ -113,20 +113,20 @@ function animate() {
     if (player.gameOver) {
         c.fillStyle = 'black';
         c.fillRect(0, 0, canvas.width, canvas.height);
-    
+
         c.fillStyle = 'white';
         c.font = '48px Arial';
         c.fillText('Damn You Suck', canvas.width / 2 - 100, canvas.height / 2);
-    
+
         return; // Stop further drawing if the game is over
-      }
+    }
 
     const now = performance.now();
     const deltaTime = now - lastFrameTime;
 
     if (deltaTime > frameInterval) {
         lastFrameTime = now - (deltaTime % frameInterval); // Adjust for any extra time that passed
-        
+
         // Game logic
         c.fillStyle = 'black'
         c.fillRect(0, 0, canvas.width, canvas.height)
@@ -142,7 +142,7 @@ function animate() {
         for (let enemy of currentRoom.enemiesList) {
             enemy.update(player);
         }
-               
+
         player.update(currentRoom)
         player.velocity.x = 0
         if (keys.a.pressed) {
@@ -215,6 +215,9 @@ window.addEventListener('keydown', (event) => {
                 player.status.activeDoubleJump = false
             }
             break
+        case 'e':
+            player.meleeAttack(currentRoom.enemiesList);
+            break;
     }
 })
 

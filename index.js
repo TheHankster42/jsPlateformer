@@ -7,6 +7,11 @@ document.querySelector('canvas').style.cursor = 'none';
 canvas.width = 1920
 canvas.height = 1080
 
+// FPS limiting variables
+const fps = 60;
+const frameInterval = 1000 / fps;
+let lastFrameTime = performance.now();
+
 const scaledCanvas = {
     width: canvas.width / 4,
     height: canvas.height / 4,
@@ -83,13 +88,21 @@ var camera = {
     },
 }
 
-// FPS limiting variables
-const fps = 60;
-const frameInterval = 1000 / fps;
-let lastFrameTime = performance.now();
+
 
 function animate() {
     requestAnimationFrame(animate);
+
+    if (player.gameOver) {
+        c.fillStyle = 'black';
+        c.fillRect(0, 0, canvas.width, canvas.height);
+    
+        c.fillStyle = 'white';
+        c.font = '48px Arial';
+        c.fillText('Damn You Suck', canvas.width / 2 - 100, canvas.height / 2);
+    
+        return; // Stop further drawing if the game is over
+      }
 
     const now = performance.now();
     const deltaTime = now - lastFrameTime;

@@ -44,6 +44,7 @@ class Player extends Sprite {
         }
         this.maxHealth = 100;
         this.health = this.maxHealth;
+        this.gameOver = false;
     }
 
     switchSprite(key) {
@@ -194,7 +195,12 @@ class Player extends Sprite {
     }
 
     takeDamage(damage){
-        this.health-damage
+        this.health -= damage;
+        if (this.health <= 0) {
+            this.health = 0;
+
+            this.gameOver = true;
+        }
     }
 
     drawHealthBar(player) {

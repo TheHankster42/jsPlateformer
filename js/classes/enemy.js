@@ -19,6 +19,9 @@ class Enemy extends Sprite {
       height: 55,
     };
 
+    this.timeInPlayerHitbox = 0;
+    this.attackCooldown = 1000;
+
     for (let key in this.animations) {
       const image = new Image();
       image.src = this.animations[key].imageSrc;
@@ -35,7 +38,6 @@ class Enemy extends Sprite {
     this.frameRate = this.animations[key].frameRate;
   }
 
-
   update(player) {
     this.updateFrames();
     this.updateHitbox();
@@ -43,8 +45,7 @@ class Enemy extends Sprite {
     this.draw();
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
-
-
+    this.updateAttackTimer(player)
     this.drawHitbox();
   }
 
@@ -95,7 +96,10 @@ class Enemy extends Sprite {
       this.velocity.x = 0;
       this.velocity.y = 0;
 
-      // this.attackPlayer();
+      if (this.timeInPlayerHitbox >= this.attackCooldown) {
+        this.attackPlayer();
+        this.timeInPlayerHitbox = 0;
+      }
     }
   }
 
@@ -110,6 +114,7 @@ class Enemy extends Sprite {
 
   attackPlayer() {
     console.log("Enemy attacks the player!");
+    this.player.takeDamage(10); // Example damage value
   }
 
   takeDamage(amount) {
@@ -121,5 +126,14 @@ class Enemy extends Sprite {
 
   die() {
     console.log("Enemy died!");
+  }
+
+  // Method to check if the enemy is within the player's hitbox
+  updateAttackTimer(player) {
+    if (this.playerInsideHitbox(player)) {
+      this.timeInPlayerHitbox += 1000 / 60; // Time increment per frame (approx 60 FPS)
+    } else {
+      this.timeInPlayerHitbox = 0; // Reset time if the player is not in the hitbox
+    }
   }
 }

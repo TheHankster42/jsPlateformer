@@ -84,8 +84,6 @@ var camera = {
     },
 }
 
-// brick = new Brick(argsBrick)
-
 function animate() {
     window.requestAnimationFrame(animate)
 
@@ -105,11 +103,11 @@ function animate() {
     // })
 
     player.checkForHorizontalCanvasCollision()
-    player.update(currentRoom)
+    
     // console.log(player.status)
 
     enemy.update(player)
-
+    player.update(currentRoom)
     player.velocity.x = 0
     if (keys.a.pressed) {
         player.switchSprite('RunLeft')
@@ -210,6 +208,7 @@ window.addEventListener('keyup', (event) => {
                 roomlistIndex++
             }
             currentRoom = roomlist[roomlistIndex]
+            player.takeDamage(5)
             break
     }
 })

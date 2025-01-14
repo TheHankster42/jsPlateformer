@@ -42,6 +42,8 @@ class Player extends Sprite {
             onPlatform: false,
             dropDown: false,
         }
+        this.maxHealth = 100;
+        this.health = this.maxHealth;
     }
 
     switchSprite(key) {
@@ -125,6 +127,8 @@ class Player extends Sprite {
         // c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height)
 
         this.draw()
+        this.drawHealthBar(player)
+
 
         this.position.x += this.velocity.x
         this.updateHitbox()
@@ -187,6 +191,37 @@ class Player extends Sprite {
             this.velocity.y = 5
         }
         this.position.y += this.velocity.y
+    }
+
+    takeDamage(damage){
+        this.health-damage
+    }
+
+    drawHealthBar(player) {
+        c.fillStyle = 'black';
+        c.fillRect(
+            player.camerabox.position.x + 135, 
+            player.camerabox.position.y + 70, 
+            35,                              
+            5                                
+        );
+    
+        const healthWidth = (player.health / player.maxHealth) * 35;
+        c.fillStyle = 'green';
+        c.fillRect(
+            player.camerabox.position.x + 135,
+            player.camerabox.position.y + 70,
+            healthWidth,
+            5
+        );
+    
+        c.fillStyle = 'white';
+        c.font = '5px Arial';
+        c.fillText(
+            `${player.health}/${player.maxHealth}`, 
+            player.camerabox.position.x + 135,
+            player.camerabox.position.y + 70
+        );
     }
 
     checkForVerticalCollisions(currentRoom) {

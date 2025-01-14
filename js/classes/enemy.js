@@ -1,24 +1,20 @@
 class Enemy extends Sprite {
-  constructor({ position, imageSrc, frameRate, scale = 0.5, animations, health = 100, moveSpeed = 1 }) {
+  constructor({ position, imageSrc, frameRate, scale = 0.5, animations, velocity, health = 100, player, moveSpeed = 0.05 }) {
     super({
       position,
       imageSrc,
       frameRate,
       scale,
     });
-    this.velocity = {
-      x: 0,
-      y: 0,
-    }
+    this.velocity = velocity || { x: 0, y: 0 };
     this.health = health;
     this.animations = animations;
-    this.direction = 'left';
+    this.player = player;
     this.moveSpeed = moveSpeed;
+    this.detectionRadius = 250;
+
     this.hitbox = {
-      position: {
-        x: this.position.x + 50,
-        y: this.position.y + 50,
-      },
+      position: { x: this.position.x + 50, y: this.position.y + 50 },
       width: 50,
       height: 55,
     };
@@ -39,53 +35,81 @@ class Enemy extends Sprite {
     this.frameRate = this.animations[key].frameRate;
   }
 
+
   update(player) {
     this.updateFrames();
     this.updateHitbox();
     this.updateMovement(player);
     this.draw();
-    this.drawHitbox();
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
+
+
+    this.drawHitbox();
   }
 
   updateHitbox() {
+    const hitboxOffsetX = 50;
+    const hitboxOffsetY = 50;
+
     this.hitbox = {
       position: {
-        x: this.position.x + 50,
-        y: this.position.y + 50,
+        x: this.position.x + hitboxOffsetX,
+        y: this.position.y + hitboxOffsetY,
       },
       width: 50,
       height: 55,
     };
   }
 
+  drawHitbox() {
+    c.fillStyle = 'rgba(255, 0, 0, 0.3)';
+    c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
+  }
+
+  calculateDistance(x1, y1, x2, y2) {
+    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+  }
+
+  isPlayerInRadius() {
+    const distance = this.calculateDistance(
+      this.position.x, this.position.y, this.player.position.x, this.player.position.y
+    );
+    return distance <= this.detectionRadius;
+  }
+
   updateMovement(player) {
     const playerInsideHitbox = this.playerInsideHitbox(player);
 
-    if (!playerInsideHitbox) {
-      const directionX = player.position.x - this.position.x;
-      const directionY = player.position.y - this.position.y;
+    if (!playerInsideHitbox && this.isPlayerInRadius()) {
+      const directionX = player.position.x - this.position.x - 30;
+      const directionY = player.position.y - this.position.y - 30;
 
-      const distance = Math.sqrt(directionX ** 2 + directionY ** 2); 
+      const distance = Math.sqrt(directionX ** 2 + directionY ** 2);
 
       if (distance > 0) {
         this.velocity.x = (directionX / distance) * this.moveSpeed;
         this.velocity.y = (directionY / distance) * this.moveSpeed;
       }
     } else {
-      this.velocity.x = 0; 
-      this.velocity.y = 0; 
+      this.velocity.x = 0;
+      this.velocity.y = 0;
+
+      // this.attackPlayer();
     }
   }
 
   playerInsideHitbox(player) {
     return (
-      player.hitbox.position.x + player.hitbox.width > this.hitbox.position.x &&
-      player.hitbox.position.x < this.hitbox.position.x + this.hitbox.width &&
-      player.hitbox.position.y + player.hitbox.height > this.hitbox.position.y &&
-      player.hitbox.position.y < this.hitbox.position.y + this.hitbox.height
+      this.hitbox.position.x <= player.hitbox.position.x &&
+      this.hitbox.position.x + this.hitbox.width >= player.hitbox.position.x + player.hitbox.width &&
+      this.hitbox.position.y <= player.hitbox.position.y &&
+      this.hitbox.position.y + this.hitbox.height >= player.hitbox.position.y + player.hitbox.height
     );
+  }
+
+  attackPlayer() {
+    console.log("Enemy attacks the player!");
   }
 
   takeDamage(amount) {
@@ -97,10 +121,5 @@ class Enemy extends Sprite {
 
   die() {
     console.log("Enemy died!");
-  }
-
-  drawHitbox() {
-    c.fillStyle = 'rgba(255, 0, 0, 0.3)';
-    c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
   }
 }

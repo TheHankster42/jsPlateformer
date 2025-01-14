@@ -17,11 +17,44 @@ const scaledCanvas = {
     height: canvas.height / 4,
 }
 
+var player = new Player(argsW)
+
+const enemy = new Enemy({
+    position: {
+        x: 150,
+        y: 320,
+    }, 
+    imageSrc: './img/brick/bricksheet.png',
+    frameRate: 2, 
+    frameBuffer: 7, 
+    scale: 1,  
+    health: 100, 
+    player: player,
+    moveSpeed: 1.75,
+})
+
+const enemy2 = new Enemy({
+    position: {
+        x: 300,
+        y: 320,
+    }, 
+    imageSrc: './img/brick/bricksheet.png',
+    frameRate: 2, 
+    frameBuffer: 7, 
+    scale: 1,  
+    health: 100, 
+    player: player,
+    moveSpeed: 1.75,
+})
+
+const douList = [enemy, enemy2]
+
 const room1 = new Room({
     imageSrc: './img/backgrounds/background.png',
     floorCollisions: floorCollisions1,
     platformCollisions: platformCollisions1,
     imageHeight: 432,
+    enemiesList: douList,
 })
 
 const room2 = new Room({
@@ -52,22 +85,6 @@ var currentRoom = roomlist[roomlistIndex]
 
 const gravity = 0.25
 const speed = 3
-
-var player = new Player(argsW)
-
-const enemy = new Enemy({
-    position: {
-        x: 150,
-        y: 320,
-    }, 
-    imageSrc: './img/brick/bricksheet.png',
-    frameRate: 2, 
-    frameBuffer: 7, 
-    scale: 1,  
-    health: 100, 
-    player: player,
-    moveSpeed: 1.75,
-})
 
 const keys = {
     d: {
@@ -121,7 +138,11 @@ function animate() {
 
         // Update player and enemy
         player.checkForHorizontalCanvasCollision()
-        enemy.update(player)
+
+        for (let enemy of currentRoom.enemiesList) {
+            enemy.update(player);
+        }
+               
         player.update(currentRoom)
         player.velocity.x = 0
         if (keys.a.pressed) {

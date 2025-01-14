@@ -1,5 +1,5 @@
 class Enemy extends Sprite {
-  constructor({ position, imageSrc, frameRate, scale = 0.5, animations, velocity, health = 100, player, moveSpeed = 0.05 }) {
+  constructor({ position, imageSrc, frameRate, scale = 0.5, animations, velocity, health = 100, player, moveSpeed = 1 }) {
     super({
       position,
       imageSrc,
@@ -20,7 +20,7 @@ class Enemy extends Sprite {
     };
 
     this.timeInPlayerHitbox = 0;
-    this.attackCooldown = 1000;
+    this.attackCooldown = 800;
 
     for (let key in this.animations) {
       const image = new Image();
@@ -114,7 +114,7 @@ class Enemy extends Sprite {
 
   attackPlayer() {
     console.log("Enemy attacks the player!");
-    this.player.takeDamage(10); // Example damage value
+    this.player.takeDamage(10);
   }
 
   takeDamage(amount) {
@@ -131,7 +131,7 @@ class Enemy extends Sprite {
   // Method to check if the enemy is within the player's hitbox
   updateAttackTimer(player) {
     if (this.playerInsideHitbox(player)) {
-      this.timeInPlayerHitbox += 1000 / 60; // Time increment per frame (approx 60 FPS)
+      this.timeInPlayerHitbox += 1000 / 30; // Time increment per frame (approx 60 FPS)
     } else {
       this.timeInPlayerHitbox = 0; // Reset time if the player is not in the hitbox
     }

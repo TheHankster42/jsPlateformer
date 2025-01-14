@@ -1,5 +1,5 @@
 class Room{
-    constructor({imageSrc, floorCollisions, platformCollisions, imageHeight, scale = 1}){
+    constructor({imageSrc, floorCollisions, platformCollisions, imageHeight, scale = 1, enemiesList = []}){
         this.background = new Sprite({
             position: {
                 x: 0,
@@ -8,6 +8,8 @@ class Room{
             imageSrc: imageSrc,
             scale
         })
+
+        this.enemiesList = enemiesList;
 
         this.floorCollisions = floorCollisions
         this.platformCollisions = platformCollisions

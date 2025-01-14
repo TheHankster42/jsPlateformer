@@ -57,12 +57,12 @@ const enemy = new Enemy({
         y: 320,
     }, 
     imageSrc: './img/brick/bricksheet.png',
-    frameRate = 1, 
-    frameBuffer = 7, 
-    scale = 1,  
-    health = 100, 
+    frameRate: 2, 
+    frameBuffer: 7, 
+    scale: 1,  
+    health: 100, 
     player: player,
-    speed = speed,
+    moveSpeed: 1,
 })
 
 const keys = {
@@ -107,10 +107,8 @@ function animate() {
     player.checkForHorizontalCanvasCollision()
     player.update(currentRoom)
     // console.log(player.status)
-    if (brick != null){
-        brick.update()
-    }
-    enemy.update()
+
+    enemy.update(player)
 
     player.velocity.x = 0
     if (keys.a.pressed) {

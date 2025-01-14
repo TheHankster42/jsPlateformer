@@ -1,4 +1,3 @@
-
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext(['2d'])
 const tileSize = 16
@@ -47,7 +46,7 @@ roomlistIndex = 0
 var currentRoom = roomlist[roomlistIndex]
 
 const gravity = 0.25
-const speed = 2
+const speed = 3
 
 var player = new Player(argsW)
 
@@ -62,7 +61,7 @@ const enemy = new Enemy({
     scale: 1,  
     health: 100, 
     player: player,
-    moveSpeed: 1,
+    moveSpeed: 1.75,
 })
 
 const keys = {
@@ -84,69 +83,73 @@ var camera = {
     },
 }
 
+// FPS limiting variables
+const fps = 60;
+const frameInterval = 1000 / fps;
+let lastFrameTime = performance.now();
+
 function animate() {
-    window.requestAnimationFrame(animate)
+    requestAnimationFrame(animate);
 
-    c.fillStyle = 'black'
-    c.fillRect(0, 0, canvas.width, canvas.height)
+    const now = performance.now();
+    const deltaTime = now - lastFrameTime;
 
-    c.save()
-    c.scale(4, 4)
-    c.translate(camera.position.x, camera.position.y)
-    currentRoom.background.update()
+    if (deltaTime > frameInterval) {
+        lastFrameTime = now - (deltaTime % frameInterval); // Adjust for any extra time that passed
+        
+        // Game logic
+        c.fillStyle = 'black'
+        c.fillRect(0, 0, canvas.width, canvas.height)
 
-    // collisionBlocks.forEach(collisionBlock => {
-    //     collisionBlock.update()
-    // })
-    // platformCollisionBlocks.forEach(platformCollisionBlocks => {
-    //     platformCollisionBlocks.update()
-    // })
+        c.save()
+        c.scale(4, 4)
+        c.translate(camera.position.x, camera.position.y)
+        currentRoom.background.update()
 
-    player.checkForHorizontalCanvasCollision()
-    
-    // console.log(player.status)
-
-    enemy.update(player)
-    player.update(currentRoom)
-    player.velocity.x = 0
-    if (keys.a.pressed) {
-        player.switchSprite('RunLeft')
-        player.velocity.x = -speed
-        player.direction = 'left'
-        player.shouldPanRight()
-    }
-    else if (keys.d.pressed) {
-        player.switchSprite('Run')
-        player.velocity.x = speed
-        player.direction = 'right'
-        player.shouldPanLeft()
-    }
-    else if (player.velocity.y == 0) {
-        if (player.direction == 'right') {
-            player.switchSprite('Idle')
-        } else {
-            player.switchSprite('IdleLeft')
+        // Update player and enemy
+        player.checkForHorizontalCanvasCollision()
+        enemy.update(player)
+        player.update(currentRoom)
+        player.velocity.x = 0
+        if (keys.a.pressed) {
+            player.switchSprite('RunLeft')
+            player.velocity.x = -speed
+            player.direction = 'left'
+            player.shouldPanRight()
         }
-    }
-
-    if (player.velocity.y < 0) {
-        player.shouldPanDown()
-        if (player.direction == 'right') {
-            player.switchSprite('Jump')
-        } else {
-            player.switchSprite('JumpLeft')
+        else if (keys.d.pressed) {
+            player.switchSprite('Run')
+            player.velocity.x = speed
+            player.direction = 'right'
+            player.shouldPanLeft()
         }
-    }
-    else if (player.velocity.y > 0) {
-        player.shouldPanUp()
-        if (player.direction == 'right') {
-            player.switchSprite('Fall')
-        } else {
-            player.switchSprite('FallLeft')
+        else if (player.velocity.y == 0) {
+            if (player.direction == 'right') {
+                player.switchSprite('Idle')
+            } else {
+                player.switchSprite('IdleLeft')
+            }
         }
-    }
 
-    c.restore()
+        if (player.velocity.y < 0) {
+            player.shouldPanDown()
+            if (player.direction == 'right') {
+                player.switchSprite('Jump')
+            } else {
+                player.switchSprite('JumpLeft')
+            }
+        }
+        else if (player.velocity.y > 0) {
+            player.shouldPanUp()
+            if (player.direction == 'right') {
+                player.switchSprite('Fall')
+            } else {
+                player.switchSprite('FallLeft')
+            }
+        }
+
+        c.restore();
+    }
 }
 
 animate()

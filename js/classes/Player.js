@@ -33,7 +33,7 @@ class Player extends Sprite {
                 y: this.position.y - 50,
             },
             width: 300,
-            height: 140,
+            height: 120,
         }
         this.status = {
             colliding: false,
@@ -102,12 +102,10 @@ class Player extends Sprite {
         this.camerabox = {
             position: {
                 x: this.position.x - 110,
-                y: this.position.y - 54,
+                y: this.position.y - 50,
             },
             width: 300,
-            height: 140,
-
-
+            height: 120,
         }
     }
 
@@ -122,8 +120,8 @@ class Player extends Sprite {
         this.updateHitbox()
         this.updateCameraBox()
 
-        // c.fillStyle = 'rgba(0,255,0,0.3)'
-        // c.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height)
+        c.fillStyle = 'rgba(0,255,0,0.3)'
+        c.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height)
 
         // c.fillStyle = 'rgba(0,0,255,0.3)'
         // c.fillRect(this.position.x, this.position.y, this.width, this.height)
@@ -248,12 +246,12 @@ class Player extends Sprite {
                     enemy.takeDamage(20);
                     console.log('Melee attack!');
                 }
-                if (this.direction = "right"){
+                if (this.direction === "right") {
                     this.switchSprite("Fall");
-                } else{
+                } else {
                     this.switchSprite("FallLeft");
                 }
-            });a
+            });
         } else {
             console.log('Melee attack is on cooldown!');
         }

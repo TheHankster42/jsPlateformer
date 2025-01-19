@@ -49,35 +49,91 @@ const enemy2 = new Enemy({
 
 const douList = [enemy, enemy2]
 
-const room1 = new Room({
-    imageSrc: './img/backgrounds/background.png',
-    floorCollisions: floorCollisions1,
-    platformCollisions: platformCollisions1,
-    imageHeight: 432,
-    enemiesList: douList,
-})
+const room1 = new Room(
+    {
+        imageSrc: './img/backgrounds/background.png',
+        floorCollisions: floorCollisions1,
+        platformCollisions: platformCollisions1,
+        imageHeight: 432,
+        enemiesList: douList,
+    },
+    new CollisionBlock({
+        position: {
+            x: 450,
+            y: 89,
+        },
+        width: 50,
+        height: 55,
+    }),
+    {
+        x: 150,
+        y: 320,
+    }
+);
 
-const room2 = new Room({
-    imageSrc: './img/backgrounds/background_glacial_mountains_lightened.png',
-    floorCollisions: floorCollisionsFlat,
-    platformCollisions: platformCollisionsNull,
-    imageHeight: 216,
-    scale: 2,
-})
+const room2 = new Room(
+    {
+        imageSrc: './img/backgrounds/background_glacial_mountains_lightened.png',
+        floorCollisions: floorCollisionsFlat,
+        platformCollisions: platformCollisionsNull,
+        imageHeight: 216,
+        scale: 2,
+    },
+    new CollisionBlock({
+        position: {
+            x: 400,
+            y: 400,
+        },
+        width: 50,
+        height: 55,
+    }),
+    {
+        x: 150,
+        y: 320,
+    }
+);
 
-const room3 = new Room({
-    imageSrc: './img/backgrounds/background2.png',
-    floorCollisions: floorCollisionsFlat,
-    platformCollisions: platformCollisionsNull,
-    imageHeight: 432,
-})
+const room3 = new Room(
+    {
+        imageSrc: './img/backgrounds/background2.png',
+        floorCollisions: floorCollisionsFlat,
+        platformCollisions: platformCollisionsNull,
+        imageHeight: 432,
+    },
+    new CollisionBlock({
+        position: {
+            x: 400,
+            y: 400,
+        },
+        width: 50,
+        height: 55,
+    }),
+    {
+        x: 150,
+        y: 320,
+    }
+);
 
-const room4 = new Room({
-    imageSrc: './img/backgrounds/background2.png',
-    floorCollisions: floorCollisionsStart,
-    platformCollisions: platformCollisionsNull,
-    imageHeight: 432,
-})
+const room4 = new Room(
+    {
+        imageSrc: './img/backgrounds/background2.png',
+        floorCollisions: floorCollisionsStart,
+        platformCollisions: platformCollisionsNull,
+        imageHeight: 432,
+    },
+    new CollisionBlock({
+        position: {
+            x: 400,
+            y: 400,
+        },
+        width: 50,
+        height: 55,
+    }),
+    {
+        x: 150,
+        y: 320,
+    }
+);
 
 roomlist = [room1, room2, room3, room4]
 roomlistIndex = 0
@@ -96,6 +152,9 @@ const keys = {
     s: {
         pressed: false
     },
+    p: {
+        pressed: false
+    }
 }
 
 var camera = {
@@ -121,11 +180,22 @@ function animate() {
         return; // Stop further drawing if the game is over
     }
 
+    if (currentRoom == roomlist[3]) {
+        c.fillStyle = 'black';
+        c.fillRect(0, 0, canvas.width, canvas.height);
+
+        c.fillStyle = 'white';
+        c.font = '48px Arial';
+        c.fillText('Yay', canvas.width / 2 - 100, canvas.height / 2);
+
+        return; // Stop further drawing if the game is over
+    }
+
     const now = performance.now();
     const deltaTime = now - lastFrameTime;
 
     if (deltaTime > frameInterval) {
-        lastFrameTime = now - (deltaTime % frameInterval); // Adjust for any extra time that passed
+        lastFrameTime = now - (deltaTime % frameInterval);
 
         // Game logic
         c.fillStyle = 'black'
@@ -136,15 +206,30 @@ function animate() {
         c.translate(camera.position.x, camera.position.y)
         currentRoom.background.update()
 
+
         // Update player and enemy
         player.checkForHorizontalCanvasCollision()
 
+        currentRoom.drawDoor()
+        
         for (let enemy of currentRoom.enemiesList) {
             enemy.update(player);
         }
 
         player.update(currentRoom)
+        
         player.velocity.x = 0
+        if(keys.p.pressed){
+            if (collision({
+                object1: player.hitbox,
+                object2: currentRoom.doorHitbox,
+            })) {
+                switchRoom()
+                camera.position.x = currentRoom.startingPosition.x-200
+                camera.position.y = currentRoom.startingPosition.y-450
+
+            }
+        }
         if (keys.a.pressed) {
             player.switchSprite('RunLeft')
             player.velocity.x = -speed
@@ -186,7 +271,18 @@ function animate() {
     }
 }
 
-animate()
+animate();
+
+function switchRoom() {
+    if (roomlist.length == roomlistIndex + 1) {
+        roomlistIndex = 0
+    } else {
+        roomlistIndex++
+    }
+    currentRoom = roomlist[roomlistIndex]
+    player.position = currentRoom.startingPosition
+    player.updateCameraBox;    
+}
 
 window.addEventListener('keydown', (event) => {
     switch (event.key) {
@@ -218,6 +314,9 @@ window.addEventListener('keydown', (event) => {
         case 'e':
             player.meleeAttack(currentRoom.enemiesList);
             break;
+        case 'p':
+            keys.p.pressed = true;
+            break
     }
 })
 
@@ -242,13 +341,7 @@ window.addEventListener('keyup', (event) => {
             player.velocity.y = 0
             break
         case 'p':
-            if (roomlist.length == roomlistIndex + 1) {
-                roomlistIndex = 0
-            } else {
-                roomlistIndex++
-            }
-            currentRoom = roomlist[roomlistIndex]
-            player.takeDamage(5)
+            keys.p.pressed = false;
             break
     }
 })

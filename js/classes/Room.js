@@ -1,5 +1,5 @@
 class Room{
-    constructor({imageSrc, floorCollisions, platformCollisions, imageHeight, scale = 1, enemiesList = []}){
+    constructor({imageSrc, floorCollisions, platformCollisions, imageHeight, scale = 1, enemiesList = []}, door, startingPosition){
         this.background = new Sprite({
             position: {
                 x: 0,
@@ -15,6 +15,9 @@ class Room{
         this.platformCollisions = platformCollisions
 
         this.imageHeight = imageHeight
+        this.doorHitbox = door;
+        this.startingPosition = startingPosition;
+
 
         // CREATION OF THE COLLISION BLOCKS INTO LISTS
 
@@ -58,4 +61,9 @@ class Room{
         })
 
     }
+
+    drawDoor() {
+        c.fillStyle = 'rgba(16, 72, 177, 0.7)';
+        c.fillRect(this.doorHitbox.position.x, this.doorHitbox.position.y, this.doorHitbox.width, this.doorHitbox.height);
+      }
 }

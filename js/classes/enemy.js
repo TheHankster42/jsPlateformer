@@ -49,8 +49,30 @@ class Enemy extends Sprite {
     this.updateHitbox();
     this.updateMovement(player);
     this.draw();
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
+    if (this.velocity.x != 0)
+      this.position.x += this.velocity.x + 3*(Math.random()-0.5);
+    else {
+      this.position.x += 0.5*(Math.random()-0.5);
+    }
+    if (this.velocity.y != 0)
+      this.position.y += this.velocity.y + 3*(Math.random()-0.5);
+    else {
+      this.position.y += 0.5*(Math.random()-0.5);
+    }
+
+    player.bullets.forEach(bullet => {
+      if (collision({
+          object1: this,
+          object2: bullet,
+      })) {
+          this.takeDamage(bullet.damage);
+
+          if (!bullet.piercing) {
+              bullet.remove();
+          }
+      }
+  });
+
     this.updateAttackTimer(player)
     this.drawHitbox();
     this.drawHealthBar();

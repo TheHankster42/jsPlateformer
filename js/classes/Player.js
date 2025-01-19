@@ -46,9 +46,26 @@ class Player extends Sprite {
         this.health = this.maxHealth;
         this.gameOver = false;
 
+        this.maxAmmo = 7;
+        this.ammo = this.maxAmmo;
+        this.damage = 20;
+        this.superDamage = 70;
+        this.bulletSpeed = 7;
+        this.superBulletSpeed = 11;
+        this.superBullet = false;
+        this.bullets = [];
+        this.lastShotTime = 0;
+        this.shootCooldown = 200;
+        this.ammoRegenerationRate = 0.01;
+        this.rechargeDelay = 4000;
+
         this.meleeCooldown = 500;
         this.lastMeleeTime = 0;
         this.meleeRange = 50;
+
+        this.lastDamageTime = Date.now();
+        this.healthRegenerationRate = 0.1;
+        this.regenerationDelay = 8000;
     }
 
     switchSprite(key) {
@@ -120,8 +137,10 @@ class Player extends Sprite {
         this.updateHitbox()
         this.updateCameraBox()
 
-        c.fillStyle = 'rgba(0,255,0,0.3)'
-        c.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height)
+        this.bullets = this.bullets.filter(bullet => bullet.velocity.x !== 0 || bullet.velocity.y !== 0);
+
+        // c.fillStyle = 'rgba(0,255,0,0.3)'
+        // c.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height)
 
         // c.fillStyle = 'rgba(0,0,255,0.3)'
         // c.fillRect(this.position.x, this.position.y, this.width, this.height)
@@ -130,7 +149,7 @@ class Player extends Sprite {
         // c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height)
 
         this.draw()
-        this.drawHealthBar(player)
+        this.drawResBar(player)
 
 
         this.position.x += this.velocity.x
@@ -141,6 +160,9 @@ class Player extends Sprite {
         this.updateHitbox()
 
         this.checkForVerticalCollisions(currentRoom)
+        this.bullets.forEach(bullet => bullet.update(currentRoom.enemies));
+        this.regenerateAmmo()
+        this.regenerateHealth()
     }
     activeJump() {
         this.status.colliding = true
@@ -198,6 +220,7 @@ class Player extends Sprite {
 
     takeDamage(damage){
         this.health -= damage;
+        this.lastDamageTime = Date.now();
         if (this.health <= 0) {
             this.health = 0;
 
@@ -205,13 +228,23 @@ class Player extends Sprite {
         }
     }
 
-    drawHealthBar(player) {
+    regenerateHealth() {
+        const currentTime = Date.now();
+        if (currentTime - this.lastDamageTime >= this.regenerationDelay) {
+            if (this.health < this.maxHealth) {
+                this.health += this.healthRegenerationRate;
+                this.health = Math.min(this.health, this.maxHealth);
+            }
+        }
+    }
+
+    drawResBar(player) {
         c.fillStyle = 'black';
         c.fillRect(
             player.camerabox.position.x + 135, 
             player.camerabox.position.y + 70, 
             35,                              
-            5                                
+            2                                
         );
     
         const healthWidth = (player.health / player.maxHealth) * 35;
@@ -220,17 +253,105 @@ class Player extends Sprite {
             player.camerabox.position.x + 135,
             player.camerabox.position.y + 70,
             healthWidth,
-            5
+            2
         );
     
         c.fillStyle = 'white';
         c.font = '5px Arial';
         c.fillText(
-            `${player.health}/${player.maxHealth}`, 
+            `${Math.floor(player.health)}/${player.maxHealth}`, 
             player.camerabox.position.x + 135,
             player.camerabox.position.y + 70
         );
+
+        c.fillStyle = 'black';
+        c.fillRect(
+            player.camerabox.position.x + 135, 
+            player.camerabox.position.y + 72, 
+            35,                              
+            2                                
+        );
+    
+        const ammoWidth = (player.ammo / player.maxAmmo) * 35;
+        if (this.superBullet){
+            c.fillStyle = 'blue';
+
+        } else {
+            c.fillStyle = 'yellow';
+        }
+        c.fillRect(
+            player.camerabox.position.x + 135,
+            player.camerabox.position.y + 72,
+            ammoWidth,
+            2
+        );
+
+        c.fillStyle = 'white';
+        c.font = '5px Arial';
+        c.fillText(
+            `${Math.floor(player.ammo)}/${player.maxAmmo}`, 
+            player.camerabox.position.x + 135,
+            player.camerabox.position.y + 78
+        );
     }
+
+    shootBullet() {
+        if (this.superBullet && !(this.ammo==this.maxAmmo)) {
+            return;
+        }
+        if (this.ammo < 1) {
+            return;
+        }
+        const currentTime = Date.now();
+        var currentSpeed;
+        var currentDamage;
+
+        if (this.superBullet){
+            this.ammo = 0
+            currentSpeed = this.superBulletSpeed  
+            currentDamage = this.superDamage
+        } else {
+            this.ammo -= 1
+            currentSpeed = this.BulletSpeed
+            currentDamage = this.damage
+
+        }
+
+        if (currentTime - this.lastShotTime >= this.shootCooldown) {
+            const bulletVelocity = this.direction === 'right' ? { x: currentSpeed, y: 0 } : { x: -currentSpeed, y: 0 };
+
+            const bullet = new Bullet({
+                position: {
+                    x: this.position.x + (this.direction === 'right' ? this.width : 0),
+                    y: this.position.y + this.height / 2,
+                },
+                velocity: bulletVelocity,
+                piercing: this.superBullet,
+                damage: currentDamage
+            });
+
+            this.bullets.push(bullet);
+            this.lastShotTime = currentTime;
+
+            console.log('Bang');
+        }
+    }
+
+    regenerateAmmo() {
+        const currentTime = Date.now();
+        if (currentTime - this.lastShotTime >= this.rechargeDelay) {
+            if (this.ammo < this.maxAmmo) {
+                this.ammo += this.ammoRegenerationRate;
+                this.ammo = Math.min(this.ammo, this.maxAmmo);
+            }
+        }
+    }
+
+    switchBulletType() {
+            this.superBullet = !(this.superBullet)
+            console.log("switched")
+        }
+    
 
     meleeAttack(enemies) {
         const currentTime = Date.now();

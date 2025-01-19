@@ -62,12 +62,14 @@ const room1 = new Room(
             x: 450,
             y: 89,
         },
-        width: 50,
+        width: 16,
         height: 55,
     }),
     {
         x: 150,
         y: 320,
+        xCamera: 0,
+        yCamera: 0,
     }
 );
 
@@ -81,15 +83,17 @@ const room2 = new Room(
     },
     new CollisionBlock({
         position: {
-            x: 400,
-            y: 400,
+            x: 500,
+            y: 350,
         },
-        width: 50,
+        width: 16,
         height: 55,
     }),
     {
         x: 150,
         y: 320,
+        xCamera: 0,
+        yCamera: -130,
     }
 );
 
@@ -105,12 +109,14 @@ const room3 = new Room(
             x: 400,
             y: 400,
         },
-        width: 50,
+        width: 16,
         height: 55,
     }),
     {
-        x: 150,
+        x: 250,
         y: 320,
+        xCamera: 0,
+        yCamera: -130,
     }
 );
 
@@ -225,9 +231,6 @@ function animate() {
                 object2: currentRoom.doorHitbox,
             })) {
                 switchRoom()
-                camera.position.x = currentRoom.startingPosition.x-200
-                camera.position.y = currentRoom.startingPosition.y-450
-
             }
         }
         if (keys.a.pressed) {
@@ -281,7 +284,9 @@ function switchRoom() {
     }
     currentRoom = roomlist[roomlistIndex]
     player.position = currentRoom.startingPosition
-    player.updateCameraBox;    
+    player.updateCameraBox;
+    camera.position.x = currentRoom.startingPosition.xCamera
+    camera.position.y = currentRoom.startingPosition.yCamera
 }
 
 window.addEventListener('keydown', (event) => {
@@ -300,8 +305,10 @@ window.addEventListener('keydown', (event) => {
             }
             break
 
-        case 'w':
         case ' ':
+            player.shootBullet();
+            break;
+        case 'w':
             if (player.status.colliding == true) {
                 player.velocity.y = -6
                 colliding = false
@@ -322,6 +329,10 @@ window.addEventListener('keydown', (event) => {
 
 window.addEventListener('keyup', (event) => {
     switch (event.key) {
+        case '1':
+            player.switchBulletType();
+            break
+
         case 'd':
             keys.d.pressed = false
             break
@@ -337,9 +348,10 @@ window.addEventListener('keyup', (event) => {
 
 
         case 'w':
-        case ' ':
             player.velocity.y = 0
             break
+        case ' ':
+            break;
         case 'p':
             keys.p.pressed = false;
             break

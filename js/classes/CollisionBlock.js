@@ -1,12 +1,12 @@
 class CollisionBlock {
-    constructor({position, height = 16}){
+    constructor({position, height = 16, width = 16}){
         this.position = position
         this.height = height
-        this.width = 16
+        this.width = width
     }
 
     draw() {
-        c.fillStyle = 'rgba(255,0,0,0.5)'
+        c.fillStyle = 'rgb(115, 255, 34)'
         c.fillRect(this.position.x,this.position.y,this.width,this.height)
     }
 

@@ -106,8 +106,8 @@ const room3 = new Room(
     },
     new CollisionBlock({
         position: {
-            x: 400,
-            y: 400,
+            x: 265,
+            y: 105,
         },
         width: 16,
         height: 55,

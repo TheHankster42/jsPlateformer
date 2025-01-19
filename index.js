@@ -99,9 +99,9 @@ const room2 = new Room(
 
 const room3 = new Room(
     {
-        imageSrc: './img/backgrounds/background2.png',
+        imageSrc: './img/backgrounds/bossRoom.png',
         floorCollisions: floorCollisionsFlat,
-        platformCollisions: platformCollisionsNull,
+        platformCollisions: platformCollisionsBoss,
         imageHeight: 432,
     },
     new CollisionBlock({

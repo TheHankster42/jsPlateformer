@@ -27,4 +27,9 @@ class Bullet extends CollisionBlock {
     remove() {
         this.velocity = { x: 0, y: 0 };
     }
+
+    draw() {
+        c.fillStyle = 'yellow'; 
+        c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    }
 }

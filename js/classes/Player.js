@@ -50,7 +50,7 @@ class Player extends Sprite {
         this.ammo = this.maxAmmo;
         this.damage = 20;
         this.superDamage = 35;
-        this.bulletSpeed = 7;
+        this.bulletSpeed = 5;
         this.superBulletSpeed = 11;
         this.superBullet = false;
         this.bullets = [];
@@ -313,7 +313,7 @@ class Player extends Sprite {
             currentDamage = this.superDamage
         } else {
             this.ammo -= 1
-            currentSpeed = this.BulletSpeed
+            currentSpeed = this.bulletSpeed
             currentDamage = this.damage
 
         }

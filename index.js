@@ -47,7 +47,22 @@ const enemy2 = new Enemy({
     moveSpeed: 1.75,
 })
 
+const boss = new Boss({
+    position: {
+        x: 300,
+        y: 320,
+    },
+    imageSrc: './img/brick/bricksheet.png',
+    frameRate: 2,
+    frameBuffer: 7,
+    health: 700,
+    player: player,
+    moveSpeed: 1.25,
+})
+
 const douList = [enemy, enemy2]
+
+const bossList = [boss]
 
 const room1 = new Room(
     {
@@ -103,6 +118,7 @@ const room3 = new Room(
         floorCollisions: floorCollisionsFlat,
         platformCollisions: platformCollisionsBoss,
         imageHeight: 432,
+        enemiesList: bossList,
     },
     new CollisionBlock({
         position: {
@@ -217,15 +233,15 @@ function animate() {
         player.checkForHorizontalCanvasCollision()
 
         currentRoom.drawDoor()
-        
+
         for (let enemy of currentRoom.enemiesList) {
             enemy.update(player);
         }
 
         player.update(currentRoom)
-        
+
         player.velocity.x = 0
-        if(keys.p.pressed){
+        if (keys.p.pressed) {
             if (collision({
                 object1: player.hitbox,
                 object2: currentRoom.doorHitbox,
@@ -277,6 +293,7 @@ function animate() {
 animate();
 
 function switchRoom() {
+    if (!allEnemiesDead()) { return }
     if (roomlist.length == roomlistIndex + 1) {
         roomlistIndex = 0
     } else {
@@ -287,6 +304,10 @@ function switchRoom() {
     player.updateCameraBox;
     camera.position.x = currentRoom.startingPosition.xCamera
     camera.position.y = currentRoom.startingPosition.yCamera
+}
+
+function allEnemiesDead() {
+    return currentRoom.enemiesList.every(enemy => enemy.health <= 0);
 }
 
 window.addEventListener('keydown', (event) => {

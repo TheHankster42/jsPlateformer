@@ -15,6 +15,7 @@ class Enemy extends Sprite {
     this.maxHealth = health;
     this.health = health;
     this.dead = false;
+    this.framesSinceLastDamage = 0;
 
     this.hitbox = {
       position: { x: this.position.x + 50, y: this.position.y + 50 },
@@ -42,38 +43,49 @@ class Enemy extends Sprite {
   }
 
   update(player) {
-    if (this.dead){
+    if (this.dead) {
       return;
     }
     this.updateFrames();
     this.updateHitbox();
     this.updateMovement(player);
     this.draw();
-    if (this.velocity.x != 0)
-      this.position.x += this.velocity.x + 3*(Math.random()-0.5);
-    else {
-      this.position.x += 0.5*(Math.random()-0.5);
+    this.framesSinceLastDamage++;
+
+    if (this.velocity.x != 0) {
+      this.position.x += this.velocity.x + 3 * (Math.random() - 0.5);
+    } else {
+      this.position.x += 0.5 * (Math.random() - 0.5);
     }
-    if (this.velocity.y != 0)
-      this.position.y += this.velocity.y + 3*(Math.random()-0.5);
-    else {
-      this.position.y += 0.5*(Math.random()-0.5);
+    if (this.velocity.y != 0) {
+      this.position.y += this.velocity.y + 3 * (Math.random() - 0.5);
+    } else {
+      this.position.y += 0.5 * (Math.random() - 0.5);
     }
 
-    player.bullets.forEach(bullet => {
-      if (collision({
+    player.bullets.forEach((bullet) => {
+      if (
+        collision({
           object1: this,
           object2: bullet,
-      })) {
-          this.takeDamage(bullet.damage);
-
-          if (!bullet.piercing) {
-              bullet.remove();
+        })
+      ) {
+        if (bullet.piercing) {
+          if (this.framesSinceLastDamage >= 5) {
+            this.takeDamage(bullet.damage);
+            this.framesSinceLastDamage = 0;
           }
-      }
-  });
+        } else {
+          this.takeDamage(bullet.damage);
+        }
 
-    this.updateAttackTimer(player)
+        if (!bullet.piercing) {
+          bullet.remove();
+        }
+      }
+    });
+
+    this.updateAttackTimer(player);
     this.drawHitbox();
     this.drawHealthBar();
   }
@@ -93,8 +105,13 @@ class Enemy extends Sprite {
   }
 
   drawHitbox() {
-    c.fillStyle = 'rgba(255, 0, 0, 0.3)';
-    c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
+    c.fillStyle = "rgba(255, 0, 0, 0.3)";
+    c.fillRect(
+      this.hitbox.position.x,
+      this.hitbox.position.y,
+      this.hitbox.width,
+      this.hitbox.height
+    );
   }
 
   calculateDistance(x1, y1, x2, y2) {
@@ -103,7 +120,10 @@ class Enemy extends Sprite {
 
   isPlayerInRadius() {
     const distance = this.calculateDistance(
-      this.position.x, this.position.y, this.player.position.x, this.player.position.y
+      this.position.x,
+      this.position.y,
+      this.player.position.x,
+      this.player.position.y
     );
     return distance <= this.detectionRadius;
   }
@@ -135,9 +155,11 @@ class Enemy extends Sprite {
   playerInsideHitbox(player) {
     return (
       this.hitbox.position.x <= player.hitbox.position.x &&
-      this.hitbox.position.x + this.hitbox.width >= player.hitbox.position.x + player.hitbox.width &&
+      this.hitbox.position.x + this.hitbox.width >=
+        player.hitbox.position.x + player.hitbox.width &&
       this.hitbox.position.y <= player.hitbox.position.y &&
-      this.hitbox.position.y + this.hitbox.height >= player.hitbox.position.y + player.hitbox.height
+      this.hitbox.position.y + this.hitbox.height >=
+        player.hitbox.position.y + player.hitbox.height
     );
   }
 
@@ -154,7 +176,7 @@ class Enemy extends Sprite {
   }
 
   drawHealthBar() {
-    c.fillStyle = 'black';
+    c.fillStyle = "black";
     c.fillRect(
       this.hitbox.position.x + 0,
       this.hitbox.position.y - 7,
@@ -163,7 +185,7 @@ class Enemy extends Sprite {
     );
 
     const healthWidth = (this.health / this.maxHealth) * 35;
-    c.fillStyle = 'green';
+    c.fillStyle = "green";
     c.fillRect(
       this.hitbox.position.x + 0,
       this.hitbox.position.y - 7,
@@ -171,8 +193,8 @@ class Enemy extends Sprite {
       5
     );
 
-    c.fillStyle = 'white';
-    c.font = '5px Arial';
+    c.fillStyle = "white";
+    c.font = "5px Arial";
     c.fillText(
       `${this.health}/${this.maxHealth}`,
       this.hitbox.position.x + 0,

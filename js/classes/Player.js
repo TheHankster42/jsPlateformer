@@ -49,19 +49,20 @@ class Player extends Sprite {
         this.maxAmmo = 7;
         this.ammo = this.maxAmmo;
         this.damage = 20;
-        this.superDamage = 70;
+        this.superDamage = 35;
         this.bulletSpeed = 7;
         this.superBulletSpeed = 11;
         this.superBullet = false;
         this.bullets = [];
         this.lastShotTime = 0;
         this.shootCooldown = 200;
-        this.ammoRegenerationRate = 0.01;
-        this.rechargeDelay = 4000;
+        this.ammoRegenerationRate = 0.1;
+        this.rechargeDelay = 2500;
 
-        this.meleeCooldown = 500;
+        this.meleeCooldown = 1000;
         this.lastMeleeTime = 0;
-        this.meleeRange = 50;
+        this.meleeRange = 90;
+        this.meleeDamage = 50;
 
         this.lastDamageTime = Date.now();
         this.healthRegenerationRate = 0.1;
@@ -364,7 +365,7 @@ class Player extends Sprite {
                 const distY = Math.abs(this.position.y - enemy.position.y);
 
                 if (distX < this.meleeRange && distY < this.meleeRange) {
-                    enemy.takeDamage(20);
+                    enemy.takeDamage(this.meleeDamage);
                     console.log('Melee attack!');
                 }
                 if (this.direction === "right") {
